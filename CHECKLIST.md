@@ -32,3 +32,4 @@
 - [x] Fix shell regression (exports crash + index.html argv filter)
 - [x] Pin NW.js 0.118.0 + nw-builder packaging config
 - [x] Generate + validate Linux x64 package
+- [x] Write README.md (app overview, build, packaging, usage)

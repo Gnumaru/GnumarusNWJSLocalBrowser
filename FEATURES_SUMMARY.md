@@ -15,3 +15,4 @@
 - TypeScript with strict typing.
 - Showcase "File Manager" app (`showcase/filemanager`): pure HTML/CSS/TypeScript, no external dependencies, using the NW.js Node API for listing, creating folders/empty files, metadata and text preview.
 - Desktop distribution via `nw-builder` (NW.js 0.118.0 pinned): `npm run dist:linux` and `npm run dist` (linux/win/osx).
+- `README.md` documenting the app, build, packaging and usage of the generated executable.
