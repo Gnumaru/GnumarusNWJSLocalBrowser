@@ -1,70 +1,69 @@
 # NW.js Local Browser
 
-Aplicativo desktop (Windows, Linux e macOS) que funciona ao mesmo tempo como:
+A cross-platform desktop app (Windows, Linux, and macOS) that acts as both:
 
-- um **servidor web local** que publica um diretório do seu computador em `http://127.0.0.1:1024`;
-- um **navegador** para as páginas HTML contidas nesse diretório, carregadas dentro da própria janela do app.
+- a **local web server** that publishes a directory from your machine at `http://127.0.0.1:1024`;
+- a **browser** for the HTML pages inside that directory, rendered inside the app's own window.
 
-Ideal para desenvolvimento web: você abre uma página sua como se fosse um site real
-(`http://localhost:1024/...`), com a **API do Node.js disponível dentro da página** —
-coisa que um Chrome comum não oferece.
-
----
-
-## Sumário
-
-- [O que o aplicativo faz](#o-que-o-aplicativo-faz)
-- [Requisitos](#requisitos)
-- [Instalação](#instalação)
-- [Compilando o código (build)](#compilando-o-código-build)
-- [Gerando o executável (NW.js / nw-builder)](#gerando-o-executável-nwjs--nw-builder)
-- [Usando o executável](#usando-o-executável)
-  - [Servindo um diretório](#servindo-um-diretório)
-  - [Abrindo uma página HTML diretamente](#abrindo-uma-página-html-diretamente)
-  - [Sem argumentos: escolha na interface](#sem-argumentos-escolha-na-interface)
-- [A interface](#a-interface)
-- [A barra de ferramentas injetada](#a-barra-de-ferramentas-injetada)
-- [Segurança](#segurança)
-- [Estrutura do projeto](#estrutura-do-projeto)
-- [Scripts disponíveis](#scripts-disponíveis)
-- [Exemplo showcase: gerenciador de arquivos](#exemplo-showcase-gerenciador-de-arquivos)
-- [Problemas comuns](#problemas-comuns)
+It is built for web development: you open your own page as if it were a real site
+(`http://localhost:1024/...`) with the **Node.js API available inside the page**, something a
+regular Chrome browser cannot offer.
 
 ---
 
-## O que o aplicativo faz
+## Table of Contents
 
-1. Você informa um **diretório** (ou um **arquivo HTML**) por linha de comando, ou escolhe
-   um diretório por um diálogo nativo do sistema operacional.
-2. O app sobe um servidor HTTP **apenas local**, vinculado a `127.0.0.1` na **porta 1024**,
-   publicando o conteúdo daquele diretório.
-3. A janela do app passa a navegar pelas páginas servidas, com uma barra de ferramentas
-   injetada em toda página (voltar, avançar, barra de endereço, recarregar).
-4. Se um diretório não tiver `index.html`, o servidor gera uma **listagem de arquivos**
-   navegável.
-5. As páginas servidas rodam com **Node.js habilitado** (`require`, `nw`, `process`,
-   `fs`, `os`, ...), graças ao `node-remote` configurado no `package.json`.
+- [What the app does](#what-the-app-does)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Building the code](#building-the-code)
+- [Generating the executable](#generating-the-executable)
+- [Using the executable](#using-the-executable)
+  - [Serving a directory](#serving-a-directory)
+  - [Opening an HTML page directly](#opening-an-html-page-directly)
+  - [Running with no arguments](#running-with-no-arguments)
+- [The shell screen](#the-shell-screen)
+- [The injected toolbar](#the-injected-toolbar)
+- [Security](#security)
+- [Project layout](#project-layout)
+- [Available scripts](#available-scripts)
+- [Showcase example: file manager](#showcase-example-file-manager)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-## Requisitos
+## What the app does
 
-- **Node.js 18+** (desenvolvido e testado com Node 24).
+1. You provide a **directory** (or an **HTML file**) on the command line, or pick a directory
+   through a native operating system dialog.
+2. The app starts an HTTP server bound to `127.0.0.1` on **port 1024**, publishing the
+   contents of that directory.
+3. The app window then browses the served pages, with a toolbar injected into every page
+   (back, forward, address bar, reload).
+4. If a directory has no `index.html`, the server generates a navigable **file listing**.
+5. Served pages run with **Node.js enabled** (`require`, `nw`, `process`, `fs`, `os`, and so
+   on), thanks to the `node-remote` setting in `package.json`.
+
+---
+
+## Requirements
+
+- **Node.js 18+** (developed and tested with Node 24).
 - **npm 10+**.
-- Para gerar pacotes: acesso à internet na primeira execução (o `nw-builder` baixa o
-  runtime do NW.js ~100 MB por plataforma).
+- To produce packages: internet access on the first run (the `nw-builder` downloads the
+  NW.js runtime, roughly 100 MB per platform).
 
 ---
 
-## Instalação
+## Installation
 
 ```bash
 npm install
 ```
 
-> O `npm install` baixa o runtime do NW.js 0.118.0 (dependência `nw`, fixada em
-> `0.118.0` exato). O `postinstall` dessa dependência exige permissão — em ambientes com
-> `allowScripts`/`ignore-scripts` restritivos, aprove o pacote antes:
+> `npm install` downloads the NW.js 0.118.0 runtime (the `nw` dependency, pinned to the
+> exact version `0.118.0`). That dependency's `postinstall` needs permission: in environments
+> with restrictive `allowScripts`/`ignore-scripts` settings, approve the package first:
 >
 > ```bash
 > npm install-scripts approve nw
@@ -72,38 +71,38 @@ npm install
 
 ---
 
-## Compilando o código (build)
+## Building the code
 
-O código-fonte é **TypeScript** (`src/*.ts` e `showcase/filemanager/src/*.ts`) e é
-compilado para JavaScript na pasta `dist/`:
+The source code is **TypeScript** (`src/*.ts` and `showcase/filemanager/src/*.ts`) and is
+compiled to JavaScript in the `dist/` folder:
 
 ```bash
 npm run build
 ```
 
-Isso executa:
+This runs:
 
-| Comando                    | O que faz                                                        |
-| -------------------------- | ---------------------------------------------------------------- |
-| `tsc`                      | compila `src/*.ts` → `dist/*.js` (app principal)                  |
-| `tsc -p showcase/filemanager/tsconfig.json` | compila o showcase → `showcase/filemanager/dist/*.js` |
+| Command                                             | What it does                                            |
+| --------------------------------------------------- | ------------------------------------------------------- |
+| `tsc`                                               | compiles `src/*.ts` into `dist/*.js` (main app)         |
+| `tsc -p showcase/filemanager/tsconfig.json`         | compiles the showcase into `showcase/filemanager/dist/*.js` |
 
-Sub-comandos opcionais:
+Optional sub-commands:
 
 ```bash
-npm run build:app        # só o app principal
-npm run build:showcase   # só o showcase (file manager)
+npm run build:app        # main app only
+npm run build:showcase   # showcase (file manager) only
 ```
 
-> O `dist/` está no `.gitignore` e **não** é versionado. Por isso o `build` é executado
-> automaticamente antes de `npm start` e antes de gerar os executáveis.
+> `dist/` is listed in `.gitignore` and is **not** versioned. That is why the build runs
+> automatically before `npm start` and before the executables are produced.
 
 ---
 
-## Gerando o executável (NW.js / nw-builder)
+## Generating the executable
 
-O empacotamento usa o [`nw-builder`](https://github.com/nwutils/nw-builder) (versão
-`4.24.0`), com o runtime do NW.js fixado em **0.118.0** (flavor `normal`, sem devtools).
+Packaging uses the official [`nw-builder`](https://github.com/nwutils/nw-builder) (version
+`4.24.0`), with the NW.js runtime pinned to **0.118.0** (normal flavor, no developer tools).
 
 ### Linux
 
@@ -111,23 +110,23 @@ O empacotamento usa o [`nw-builder`](https://github.com/nwutils/nw-builder) (ver
 npm run dist:linux
 ```
 
-### Linux + Windows + macOS
+### Linux, Windows, and macOS
 
 ```bash
 npm run dist
 ```
 
-O resultado fica em `./release/`:
+The output lands in `./release/`:
 
 ```
 release/
-├── nwjs-local-browser          # executável Linux x64
-├── nwjs-local-browser.desktop  # atalho de menu (Linux)
-├── package.nw/                 # os arquivos do app (HTML, JS compilado, assets)
-├── lib/  locales/  *.pak  ...  # runtime do Chromium/NW.js
+|-- nwjs-local-browser          # Linux x64 executable
+|-- nwjs-local-browser.desktop  # menu entry (Linux)
+|-- package.nw/                 # app files (HTML, compiled JS, assets)
+`-- lib/  locales/  *.pak  ...  # Chromium/NW.js runtime
 ```
 
-### Comandos equivalents (avançado)
+### Equivalent command (advanced)
 
 ```bash
 npm run build && nwbuild --mode=build --version=0.118.0 --flavor=normal \
@@ -135,80 +134,80 @@ npm run build && nwbuild --mode=build --version=0.118.0 --flavor=normal \
   "./package.json ./index.html ./dist/** ./assets/** ./showcase/**"
 ```
 
-- `--version=0.118.0` — versão do runtime (fixada para builds reproduzíveis).
-- `--flavor=normal` — build de produção, sem ferramentas de desenvolvimento.
-- A lista final de caminhos define o que entra no pacote: apenas `package.json`,
-  `index.html`, `dist/`, `assets/` e `showcase/`. Nada de `node_modules`, `tmp/` ou
+- `--version=0.118.0` pins the runtime version for reproducible builds.
+- `--flavor=normal` selects the production build, without developer tools.
+- The final list of paths defines what goes into the package: only `package.json`,
+  `index.html`, `dist/`, `assets/`, and `showcase/`. No `node_modules`, no `tmp/`, no
   tarballs.
 
-### Onde hospedar / distribuir
+### Where to host and distribute
 
-O app é **desktop**, não um site: a "distribuição na web" consiste em hospedar os
-arquivos de `./release/` (um diretório por plataforma) para download.
+The app is a **desktop** app, not a website: "web distribution" means hosting the files in
+`./release/` (one directory per platform) for download.
 
-- **Linux**: distribua a pasta `release/` inteira (ou um `.tar.gz`/AppImage, se
-  empacotar por conta própria).
-- **Windows**: a pasta gerada contém `nwjs-local-browser.exe`.
-- **macOS**: a pasta gerada contém `nwjs-local-browser.app`.
+- **Linux**: ship the whole `release/` folder (or a `.tar.gz`/AppImage, if you package it
+  yourself).
+- **Windows**: the generated folder contains `nwjs-local-browser.exe`.
+- **macOS**: the generated folder contains `nwjs-local-browser.app`.
 
-> ⚠️ Binários não assinados disparam aviso de segurança (SmartScreen no Windows,
-> Gatekeeper no macOS). Para distribuição ampla é preciso assinar com certificado
-> (Microsoft Authenticode / Apple Developer ID + notarização).
+> Unsigned binaries trigger a security warning (SmartScreen on Windows, Gatekeeper on
+> macOS). Broad distribution requires code signing (Microsoft Authenticode / Apple
+> Developer ID plus notarization).
 
 ---
 
-## Usando o executável
+## Using the executable
 
-O executável aceita **um** argumento: um caminho para um diretório **ou** para um
-arquivo HTML. Caminhos com espaços devem estar entre aspas.
+The executable accepts a single argument: a path to a directory **or** to an HTML file.
+Paths containing spaces must be quoted.
 
-### Servindo um diretório
+### Serving a directory
 
 ```bash
 # Linux
-./release/nwjs-local-browser /home/usuario/meu-site
+./release/nwjs-local-browser /home/user/my-site
 
 # Windows
-release\nwjs-local-browser.exe "C:\Users\meu\meu-site"
+release\nwjs-local-browser.exe "C:\Users\me\my-site"
 
 # macOS
-./release/nwjs-local-browser.app/Contents/MacOS/nwjs-local-browser /Users/meu/meu-site
+./release/nwjs-local-browser.app/Contents/MacOS/nwjs-local-browser /Users/me/my-site
 ```
 
-O app serve `/home/usuario/meu-site` e abre
-`http://127.0.0.1:1024/` no navegador embutido. Se o diretório tiver `index.html`,
-essa página é aberta; caso contrário, aparece a listagem de arquivos.
+The app serves `/home/user/my-site` and opens `http://127.0.0.1:1024/` in the built-in
+browser. If the directory contains an `index.html`, that page is opened; otherwise a file
+listing is shown.
 
-### Abrindo uma página HTML diretamente
+### Opening an HTML page directly
 
 ```bash
-# caminho absoluto
-./release/nwjs-local-browser /home/usuario/meu-site/index.html
+# absolute path
+./release/nwjs-local-browser /home/user/my-site/index.html
 
-# caminho relativo (a partir do diretório atual)
+# relative path (from the current directory)
 ./release/nwjs-local-browser showcase/filemanager/index.html
 ```
 
-Nesse caso o app:
+In this case the app:
 
-1. **serve o diretório que contém o arquivo** (o *dirname*);
-2. **abre a página imediatamente** em `http://127.0.0.1:1024/index.html`.
+1. **serves the directory that contains the file** (its `dirname`);
+2. **opens the page immediately** at `http://127.0.0.1:1024/index.html`.
 
-Ou seja, o diretório continua navegável pela listagem e pela barra de endereço, mas o
-primeiro carregamento já é o arquivo indicado.
+The directory remains browsable through the file listing and the address bar, but the first
+load is the file you pointed at.
 
-> A mesma lógica vale para o campo de texto do app: digitar o caminho de um `.html`
-> inicia o servidor no diretório dele e abre o arquivo.
+> The same logic applies to the app's text field: typing the path of an `.html` file starts
+> the server on its parent directory and opens that file.
 
-### Sem argumentos: escolha na interface
+### Running with no arguments
 
-Iniciando sem argumento, o app exibe a tela de seleção, com duas opções:
+Started without an argument, the app shows the selection screen with two options:
 
-- **Choose Directory** — abre o diálogo nativo do sistema (zenity/kdialog no Linux,
-  AppleScript no macOS, `FolderBrowserDialog` no Windows);
-- campo de texto + **Start** — digite o caminho de um diretório ou de um arquivo HTML.
+- **Choose Directory** opens the native system dialog (zenity/kdialog on Linux, AppleScript
+  on macOS, `FolderBrowserDialog` on Windows);
+- text field plus **Start**, where you type the path of a directory or of an HTML file.
 
-### Verificar se o servidor está no ar
+### Checking that the server is up
 
 ```bash
 curl -I http://127.0.0.1:1024/
@@ -216,121 +215,121 @@ curl -I http://127.0.0.1:1024/
 
 ---
 
-## A interface
+## The shell screen
 
-A janela principal (`index.html`) é apenas um *shell*: ela coleta o diretório de
-serviço, sobe o servidor e navega para `http://127.0.0.1:1024/`. Depois disso, quem
-aparece é a página servida — o app funciona como um browser, com a URL real na barra
-de endereço.
-
----
-
-## A barra de ferramentas injetada
-
-O servidor injeta `dist/toolbar.js` em **toda** resposta HTML, criando a barra no topo:
-
-| Elemento              | Função                                                     |
-| --------------------- | ---------------------------------------------------------- |
-| `Choose Directory`    | troca o diretório servido, sem reiniciar o app              |
-| `←` / `→`             | voltar / avançar (histórico nativo)                         |
-| barra de endereço     | mostra a URL atual; aceita `Enter` para navegar            |
-| `Go`                  | navega para o endereço digitado                             |
-| `Reload`              | recarrega a página                                         |
-
-Regras:
-
-- só endereços locais são aceitos (`127.0.0.1:1024`, `localhost:1024`, `::1:1024`);
-  a porta `:1024` é adicionada automaticamente se faltar;
-- os IDs do toolbar usam o prefixo `lb-` para não colidir com IDs de páginas servidas
-  (a página servida pode ter o seu próprio `#toolbar`, `#btnGo`, etc.).
+The main window (`index.html`) is only a shell: it collects the target directory, starts the
+server, and navigates to `http://127.0.0.1:1024/`. From that point on, the served page is
+what you see: the app behaves like a browser, with the real URL in the address bar.
 
 ---
 
-## Segurança
+## The injected toolbar
 
-- O servidor escuta **apenas** `127.0.0.1` — não é acessível pela rede.
-- Toda requisição é verificada: o endereço de origem precisa ser loopback e o header
-  `Host` precisa ser `localhost`/`127.0.0.1`/`::1`; caso contrário, resposta **403**.
-- A resolução de arquivos passa por `safeJoin()`, que bloqueia *path traversal*
-  (`../../etc/passwd`).
-- Páginas servidas **têm acesso ao Node.js** — trate qualquer conteúdo servido por este
-  app como código confiável (equivalente a executar um script local).
+The server injects `dist/toolbar.js` into **every** HTML response, creating the toolbar at
+the top of the page:
+
+| Element            | Function                                                 |
+| ------------------ | -------------------------------------------------------- |
+| `Choose Directory` | switches the served directory without restarting the app  |
+| `Left` / `Right`   | back and forward (native history)                        |
+| address bar        | shows the current URL; press `Enter` to navigate         |
+| `Go`               | navigates to the typed address                           |
+| `Reload`           | reloads the page                                         |
+
+Rules:
+
+- only local addresses are accepted (`127.0.0.1:1024`, `localhost:1024`, `::1:1024`); the
+  `:1024` port is added automatically when missing;
+- toolbar element IDs use the `lb-` prefix so they never collide with IDs from served pages
+  (a served page may have its own `#toolbar`, `#btnGo`, and so on).
 
 ---
 
-## Estrutura do projeto
+## Security
+
+- The server listens on `127.0.0.1` only, so it is not reachable over the network.
+- Every request is checked: the source address must be loopback and the `Host` header must
+  be `localhost`, `127.0.0.1`, or `::1`; otherwise the response is **403**.
+- File resolution goes through `safeJoin()`, which blocks path traversal attempts such as
+  `../../etc/passwd`.
+- Served pages **do have access to Node.js**, so treat any content served by this app as
+  trusted code, equivalent to running a local script.
+
+---
+
+## Project layout
 
 ```
 .
-├── index.html                  # shell do app (seleção de diretório)
-├── package.json                # manifest + scripts de build/dist
-├── tsconfig.json               # TypeScript strict (app principal)
-├── assets/styles.css           # estilos do shell
-├── src/
-│   ├── shell.ts                # boot: lê argv, resolve alvo, sobe o servidor
-│   ├── server.ts               # servidor HTTP local (loopback, porta 1024)
-│   ├── toolbar.ts              # barra de ferramentas injetada nas páginas
-│   ├── dialog.ts               # diálogos nativos de seleção de diretório
-│   ├── server.test.ts          # teste do servidor (HTTP real)
-│   └── types.d.ts              # tipos do global `nw`
-├── showcase/filemanager/       # exemplo: gerenciador de arquivos (HTML/CSS/TS puro)
-└── dist/                       # saída do build (gitignored)
+|-- index.html                  # app shell (directory selection)
+|-- package.json                # manifest plus build/dist scripts
+|-- tsconfig.json               # strict TypeScript config (main app)
+|-- assets/styles.css           # shell styles
+|-- src/
+|   |-- shell.ts                # boot: reads argv, resolves target, starts server
+|   |-- server.ts               # local HTTP server (loopback only, port 1024)
+|   |-- toolbar.ts              # toolbar injected into served pages
+|   |-- dialog.ts               # native directory selection dialogs
+|   |-- server.test.ts          # server test (real HTTP)
+|   `-- types.d.ts              # type declarations for the `nw` global
+|-- showcase/filemanager/       # example: file manager (plain HTML/CSS/TS)
+`-- dist/                       # build output (gitignored)
 ```
 
 ---
 
-## Scripts disponíveis
+## Available scripts
 
-| Script                  | Descrição                                                        |
-| ----------------------- | ---------------------------------------------------------------- |
-| `npm start -- <caminho>` | compila e abre o app com o caminho informado                    |
-| `npm run build`         | compila app + showcase                                            |
-| `npm run build:app`     | compila apenas o app                                              |
-| `npm run build:showcase`| compila apenas o showcase                                         |
-| `npm run dist:linux`    | gera o executável Linux x64 em `./release/`                       |
-| `npm run dist`          | gera os executáveis Linux, Windows e macOS em `./release/`        |
-| `npm run test:server`   | teste do servidor HTTP (listagem, arquivo, traversal, host block) |
+| Script                    | Description                                                      |
+| ------------------------- | ---------------------------------------------------------------- |
+| `npm start -- <path>`     | builds and launches the app with the given path                  |
+| `npm run build`           | builds the app and the showcase                                  |
+| `npm run build:app`       | builds the app only                                              |
+| `npm run build:showcase`  | builds the showcase only                                         |
+| `npm run dist:linux`      | builds the Linux x64 executable in `./release/`                  |
+| `npm run dist`            | builds the Linux, Windows, and macOS executables in `./release/` |
+| `npm run test:server`     | runs the HTTP server test (listing, file, traversal, host block) |
 
-> No `npm start`, tudo depois de `--` é repassado ao app:
-> `npm start -- /caminho/da/pasta` ou `npm start -- /caminho/da/pagina.html`.
+> With `npm start`, everything after `--` is forwarded to the app:
+> `npm start -- /path/to/folder` or `npm start -- /path/to/page.html`.
 
 ---
 
-## Exemplo showcase: gerenciador de arquivos
+## Showcase example: file manager
 
-`showcase/filemanager/` é um gerenciador de arquivos completo (HTML + CSS + TypeScript,
-sem dependências externas) que usa a API do Node exposta dentro da página servida:
-listagem de diretórios, criação de pastas/arquivos, metadados (tamanho, permissões,
-datas), pré-visualização de texto e exclusão de itens.
+`showcase/filemanager/` is a complete file manager (HTML, CSS, and TypeScript, with no
+external dependencies) that uses the Node API exposed inside the served page: directory
+listing, folder and file creation, metadata (size, permissions, dates), text preview, and
+item deletion.
 
 ```bash
 npm start -- showcase/filemanager
 ```
 
-Ele começa em `?dir=` → `window.__SERVED_DIR__` (o diretório servido) → home do
-usuário.
+It starts in the first location that is available: the `?dir=` query parameter, then
+`window.__SERVED_DIR__` (the served directory), then the user's home directory.
 
 ---
 
-## Problemas comuns
+## Troubleshooting
 
-**A janela fica na tela de seleção e nada acontece ao clicar em Start.**
-Verifique se o build está atualizado (`npm run build`) e se `dist/shell.js` existe.
-`dist/shell.js` é carregado por `<script>` comum: ele **não** pode usar `export` de
-TypeScript (o módulo CommonJS gerado quebraria o shell inteiro).
+**The window stays on the selection screen and nothing happens when clicking Start.**
+Make sure the build is up to date (`npm run build`) and that `dist/shell.js` exists.
+`dist/shell.js` is loaded through a plain `<script>` tag, so it **must not** use TypeScript
+`export` statements: the generated CommonJS module breaks the whole shell.
 
-**`Cannot find module 'nw'` ou o app não abre após `npm install`.**
-O postinstall da dependência `nw` (que baixa o runtime) pode ter sido bloqueado.
-Rode `npm install-scripts approve nw` e `npm rebuild nw`.
+**`Cannot find module 'nw'`, or the app does not open after `npm install`.**
+The `postinstall` of the `nw` dependency (the one that downloads the runtime) may have been
+blocked. Run `npm install-scripts approve nw` followed by `npm rebuild nw`.
 
-**Porta 1024 já em uso.**
-O app sempre usa a porta fixa 1024. Feche o processo que estiver ocupando-a
-(`lsof -i :1024` no Linux) ou encerre uma instância anterior do app.
+**Port 1024 is already in use.**
+The app always uses the fixed port 1024. Close the process holding it (`lsof -i :1024` on
+Linux) or terminate a previous instance of the app.
 
-**A página servida aparece sem a barra de ferramentas.**
-A barra é injetada apenas em respostas HTML servidas pelo app. Páginas geradas
-dinamicamente ou recursos carregados via `file://` não a recebem.
+**A served page shows up without the toolbar.**
+The toolbar is injected only into HTML responses served by the app. Pages generated
+dynamically, or resources loaded through `file://`, do not get it.
 
-**Aviso de segurança ao abrir o executável no Windows/macOS.**
-Binário não assinado. Clique em "Executar mesmo assim" (Windows) ou
-`xattr -d com.apple.quarantine <app>` (macOS).
+**Security warning when opening the executable on Windows or macOS.**
+The binary is unsigned. Choose "Run anyway" on Windows, or run
+`xattr -d com.apple.quarantine <app>` on macOS.
