@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Manager</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="fm-app">
+    <header id="fm-toolbar">
+      <button id="fm-btn-up" type="button" title="Go to parent folder">Up</button>
+      <button id="fm-btn-home" type="button" title="Go to home folder">Home</button>
+      <button id="fm-btn-refresh" type="button" title="Refresh listing">Refresh</button>
+      <input id="fm-path-input" type="text" spellcheck="false" placeholder="/path/to/directory" />
+      <button id="fm-btn-go" type="button" title="Open the typed path">Go</button>
+      <span class="fm-sep"></span>
+      <button id="fm-btn-new-folder" type="button" title="Create a new directory">New Folder</button>
+      <button id="fm-btn-new-file" type="button" title="Create a new empty file">New File</button>
+      <button id="fm-btn-delete" type="button" class="fm-danger" title="Delete the selected entry">Delete</button>
+    </header>
+
+    <div id="fm-status" class="hidden"></div>
+
+    <main id="fm-main">
+      <section id="fm-list-pane">
+        <div id="fm-list-head">
+          <span id="fm-count">0 item(s)</span>
+        </div>
+        <table id="fm-list">
+          <thead>
+            <tr><th class="fm-col-name">Name</th><th class="fm-col-size">Size</th><th class="fm-col-date">Modified</th></tr>
+          </thead>
+          <tbody id="fm-rows"></tbody>
+        </table>
+      </section>
+
+      <aside id="fm-side-pane">
+        <h2>Details</h2>
+        <dl id="fm-detail"></dl>
+        <h2>Preview</h2>
+        <pre id="fm-preview"></pre>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="dist/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+# Checklist
+
+- [x] Plan created
+- [x] package.json with NW.js config
+- [x] Local HTTP server (port 1024, loopback only)
+- [x] Directory listing
+- [x] Path traversal protection
+- [x] CLI directory argument
+- [x] Directory picker dialog
+- [x] allownw-enabled browsing view
+- [x] FEATURES_SUMMARY.md
+- [x] FEATURES_DETAIL.md
+- [x] Test server
+- [x] Run NW.js app (tested with downloaded binary)
+- [x] Address bar displaying current URL
+- [x] Address bar with local-only URL validation (127.0.0.1:1024 / localhost:1024)
+- [x] "Go" button at the right end of the address bar
+- [x] Back/Forward navigation buttons to the left of the address bar
+- [x] Direct window navigation (no webview)
+- [x] Injected toolbar script served by the HTTP server
+- [x] Shell page with directory picker only
+- [x] TypeScript migration with strict typing
+- [x] Build configuration (tsconfig.json)
+- [x] Build compiles all TS to dist/JS and tests pass
+- [x] Fix shell not loading after TS migration (index.html -> dist/shell.js, dist nw.require paths)
+- [x] Enable Node API in served pages via package.json node-remote
+- [x] Showcase file manager (HTML/CSS/TS, no deps) using Node API
+- [x] File manager: list, create folder/file, metadata, text preview
+- [x] Build + integration test the showcase (38/38 assertions)
+- [x] Fix toolbar/served-page element ID collisions (lb-* / fm-* prefixes)
+- [x] CLI file argument serves containing dir and loads file immediately
+- [x] Fix shell regression (exports crash + index.html argv filter)
+- [x] Pin NW.js 0.118.0 + nw-builder packaging config
+- [x] Generate + validate Linux x64 package

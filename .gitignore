@@ -1,0 +1,11 @@
+
+*.old
+*.log
+*.sublime-*
+node_modules
+shasum
+*.gz
+dist
+tmp
+release
+cache

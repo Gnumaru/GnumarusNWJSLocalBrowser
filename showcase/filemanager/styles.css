@@ -1,0 +1,210 @@
+:root {
+  --bg: #1e1f22;
+  --bg-alt: #26282c;
+  --bg-row: #2b2d31;
+  --bg-row-alt: #26282c;
+  --bg-sel: #2f5d8a;
+  --fg: #e7e9ec;
+  --fg-dim: #9aa0a6;
+  --border: #3a3d42;
+  --accent: #4a9eff;
+  --danger: #d9534f;
+  --warn-bg: #4a3f1e;
+  --warn-fg: #ffd977;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+}
+
+#fm-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#fm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+#fm-toolbar button {
+  padding: 6px 12px;
+  background: #33363b;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#fm-toolbar button:hover { background: #3d4046; }
+#fm-toolbar button:active { background: #2a2d31; }
+#fm-toolbar button.fm-danger { border-color: var(--danger); }
+
+#fm-path-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 6px 10px;
+  background: #16171a;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+.fm-sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+#fm-status {
+  padding: 8px 14px;
+  background: var(--warn-bg);
+  color: var(--warn-fg);
+  border-bottom: 1px solid var(--border);
+}
+
+.hidden { display: none; }
+
+#fm-main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+#fm-list-pane {
+  flex: 1.4;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-right: 1px solid var(--border);
+}
+
+#fm-list-head {
+  padding: 6px 12px;
+  color: var(--fg-dim);
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+
+#fm-list {
+  flex: 1;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  overflow: hidden;
+}
+
+#fm-list thead th {
+  position: sticky;
+  top: 0;
+  text-align: left;
+  padding: 8px 12px;
+  color: var(--fg-dim);
+  font-weight: 600;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+}
+
+.fm-col-name { width: auto; }
+.fm-col-size { width: 110px; }
+.fm-col-date { width: 180px; }
+
+#fm-rows {
+  display: block;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+#fm-list tbody tr {
+  cursor: default;
+  background: var(--bg-row);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+#fm-list tbody tr:nth-child(even) { background: var(--bg-row-alt); }
+#fm-list tbody tr:hover { background: #33363b; }
+#fm-list tbody tr.fm-selected { background: var(--bg-sel); }
+#fm-list tbody tr.fm-parent { color: var(--fg-dim); }
+
+#fm-list tbody td {
+  padding: 6px 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-name { display: flex; align-items: center; gap: 8px; }
+.fm-icon { flex: 0 0 auto; }
+.fm-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fm-symlink { color: var(--fg-dim); font-size: 11px; margin-left: 6px; }
+.fm-size, .fm-date { color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+
+#fm-side-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 12px 16px;
+  background: var(--bg);
+}
+
+#fm-side-pane h2 {
+  margin: 8px 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-dim);
+}
+
+#fm-detail {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  font-size: 13px;
+}
+
+#fm-detail dt { color: var(--fg-dim); white-space: nowrap; }
+#fm-detail dd {
+  margin: 0;
+  word-break: break-all;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+#fm-preview {
+  flex: 1;
+  margin: 0;
+  padding: 12px;
+  min-height: 120px;
+  max-height: 45vh;
+  overflow: auto;
+  background: #16171a;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #d4d7dd;
+}
